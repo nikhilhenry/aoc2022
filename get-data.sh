@@ -1,0 +1,9 @@
+#!/bin/bash
+
+cookie=`cat priv-cookie`
+if [[ $# == 0 ]]
+then
+    echo "day number is not specified"
+    exit 1
+fi
+curl -b "session=${cookie}" "https://adventofcode.com/2021/day/${1}/input" > "./data/day${1}.input"
