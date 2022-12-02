@@ -1,6 +1,5 @@
 use anyhow::Result;
 use aoc;
-use itertools::Itertools;
 use std::str::FromStr;
 
 enum Move1 {
@@ -30,9 +29,9 @@ impl FromStr for Round {
                 _ => panic!(),
             };
             let player_2 = match player_2 {
-                "X" => Move2::X(1),
-                "Y" => Move2::Y(2),
-                "Z" => Move2::Z(3),
+                "X" => Move2::X(0),
+                "Y" => Move2::Y(3),
+                "Z" => Move2::Z(6),
                 _ => panic!(),
             };
             Ok(Round { player_1, player_2 })
@@ -42,6 +41,28 @@ impl FromStr for Round {
     }
 }
 
+fn compute_score_2(round: &Round) -> u32 {
+    match round.player_1 {
+        // rock
+        Move1::A => match &round.player_2 {
+            Move2::Z(val) => 2 + val,
+            Move2::Y(val) => 1 + val,
+            Move2::X(val) => 3,
+        },
+        // paper
+        Move1::B => match &round.player_2 {
+            Move2::Z(val) => 3 + val,
+            Move2::Y(val) => 2 + val,
+            Move2::X(val) => 1,
+        },
+        // scissor
+        Move1::C => match &round.player_2 {
+            Move2::Z(val) => 1 + val,
+            Move2::Y(val) => 3 + val,
+            Move2::X(val) => 2,
+        },
+    }
+}
 fn compute_score_1(round: &Round) -> u32 {
     match round.player_1 {
         Move1::A => match &round.player_2 {
@@ -61,12 +82,14 @@ fn compute_score_1(round: &Round) -> u32 {
         },
     }
 }
-fn calculate_score() -> Result<u32> {
+fn calculate_score(score_method: &dyn Fn(&Round) -> u32) -> Result<u32> {
     Ok(aoc::read_one_per_line::<Round>("./data/day2.input")?
         .iter()
-        .map(|round| compute_score_1(round))
+        .map(|round| score_method(round))
         .sum())
 }
 fn main() -> Result<()> {
-    Ok(println!("Part 1: {}", calculate_score()?))
+    println!("Part 1: {}", calculate_score(&compute_score_1)?);
+    println!("Part 2: {}", calculate_score(&compute_score_2)?);
+    Ok(())
 }
