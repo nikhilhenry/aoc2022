@@ -47,19 +47,19 @@ fn compute_score_2(round: &Round) -> u32 {
         Move1::A => match &round.player_2 {
             Move2::Z(val) => 2 + val,
             Move2::Y(val) => 1 + val,
-            Move2::X(val) => 3,
+            Move2::X(_val) => 3,
         },
         // paper
         Move1::B => match &round.player_2 {
             Move2::Z(val) => 3 + val,
             Move2::Y(val) => 2 + val,
-            Move2::X(val) => 1,
+            Move2::X(_val) => 1,
         },
         // scissor
         Move1::C => match &round.player_2 {
             Move2::Z(val) => 1 + val,
             Move2::Y(val) => 3 + val,
-            Move2::X(val) => 2,
+            Move2::X(_val) => 2,
         },
     }
 }
