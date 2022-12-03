@@ -33,8 +33,29 @@ fn total_priority() -> Result<u32> {
         .map(|ch| ch.compute_priority())
         .sum())
 }
+fn total_priority1() -> Result<u32> {
+    Ok(aoc::read_one_per_line::<String>("./data/day3.input")?
+        .into_iter()
+        .chunks(3)
+        .into_iter()
+        .map(|chunk| {
+            chunk
+                .map(|part| part.chars().collect::<HashSet<char>>())
+                .collect_vec()
+        })
+        .filter(|chunk| !chunk[0].is_empty())
+        .flat_map(|chunk| {
+            let intersect: HashSet<char> =
+                chunk[0].intersection(&chunk[1]).map(|val| *val).collect();
+            let inter: HashSet<char> = intersect.intersection(&chunk[2]).map(|val| *val).collect();
+            inter.into_iter().nth(0)
+        })
+        .map(|ch| ch.compute_priority())
+        .sum())
+}
 
 fn main() -> Result<()> {
     println!("Part 1:{}", total_priority()?);
+    println!("Part 2:{}", total_priority1()?);
     Ok(())
 }
