@@ -40,7 +40,7 @@ fn total_priority1() -> Result<u32> {
         .into_iter()
         .map(|chunk| {
             chunk
-                .map(|part| part.chars().collect::<HashSet<char>>())
+                .map(|part| part.chars().collect::<HashSet<_>>())
                 .collect_vec()
         })
         .filter(|chunk| !chunk[0].is_empty())
