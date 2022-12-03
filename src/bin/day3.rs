@@ -24,7 +24,7 @@ fn total_priority() -> Result<u32> {
         .flat_map(|(split_1, split_2)| {
             split_1
                 .chars()
-                .collect::<HashSet<char>>()
+                .collect::<HashSet<_>>()
                 .into_iter()
                 .merge(split_2.chars().collect::<HashSet<char>>())
                 .duplicates()
