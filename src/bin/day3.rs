@@ -4,11 +4,11 @@ use itertools::Itertools;
 use std::collections::HashSet;
 
 trait Priority {
-    fn compute_priority(&self) -> u32;
+    fn priority(&self) -> u32;
 }
 
 impl Priority for char {
-    fn compute_priority(&self) -> u32 {
+    fn priority(&self) -> u32 {
         if self.is_uppercase() {
             return *self as u32 - 64 + 26;
         } else {
@@ -30,7 +30,7 @@ fn total_priority() -> Result<u32> {
                 .duplicates()
                 .nth(0)
         })
-        .map(|ch| ch.compute_priority())
+        .map(|ch| ch.priority())
         .sum())
 }
 fn total_priority1() -> Result<u32> {
@@ -53,7 +53,7 @@ fn total_priority1() -> Result<u32> {
                 .map(|val| *val)
                 .nth(0)
         })
-        .map(|ch| ch.compute_priority())
+        .map(|ch| ch.priority())
         .sum())
 }
 
