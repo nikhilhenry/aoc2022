@@ -26,7 +26,7 @@ fn total_priority() -> Result<u32> {
                 .chars()
                 .collect::<HashSet<_>>()
                 .into_iter()
-                .merge(split_2.chars().collect::<HashSet<char>>())
+                .merge(split_2.chars().collect::<HashSet<_>>())
                 .duplicates()
                 .nth(0)
         })
