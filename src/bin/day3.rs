@@ -45,10 +45,13 @@ fn total_priority1() -> Result<u32> {
         })
         .filter(|chunk| !chunk[0].is_empty())
         .flat_map(|chunk| {
-            let intersect: HashSet<char> =
-                chunk[0].intersection(&chunk[1]).map(|val| *val).collect();
-            let inter: HashSet<char> = intersect.intersection(&chunk[2]).map(|val| *val).collect();
-            inter.into_iter().nth(0)
+            chunk[0]
+                .intersection(&chunk[1])
+                .map(|val| *val)
+                .collect::<HashSet<_>>()
+                .intersection(&chunk[2])
+                .map(|val| *val)
+                .nth(0)
         })
         .map(|ch| ch.compute_priority())
         .sum())
