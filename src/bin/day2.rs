@@ -26,7 +26,7 @@ impl FromStr for Round {
                 "A" => Move1::A,
                 "B" => Move1::B,
                 "C" => Move1::C,
-                _ => panic!(),
+                _ => panic!("Unable to process move"),
             };
             let player_2 = match player_2 {
                 "X" => Move2::X(0),
@@ -47,19 +47,19 @@ fn compute_score_2(round: &Round) -> u32 {
         Move1::A => match &round.player_2 {
             Move2::Z(val) => 2 + val,
             Move2::Y(val) => 1 + val,
-            Move2::X(_val) => 3,
+            Move2::X(_) => 3,
         },
         // paper
         Move1::B => match &round.player_2 {
             Move2::Z(val) => 3 + val,
             Move2::Y(val) => 2 + val,
-            Move2::X(_val) => 1,
+            Move2::X(_) => 1,
         },
         // scissor
         Move1::C => match &round.player_2 {
             Move2::Z(val) => 1 + val,
             Move2::Y(val) => 3 + val,
-            Move2::X(_val) => 2,
+            Move2::X(_) => 2,
         },
     }
 }
