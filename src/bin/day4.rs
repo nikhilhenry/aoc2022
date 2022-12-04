@@ -25,7 +25,8 @@ impl RangeComparable for RangeInclusive<u32> {
         self.start() <= other.end() && other.start() <= self.end()
     }
 }
-fn count_ids(filter: &dyn Fn((RangeInclusive<u32>, RangeInclusive<u32>)) -> bool) -> Result<usize> {
+type Filter = dyn Fn((RangeInclusive<u32>, RangeInclusive<u32>)) -> bool;
+fn count_ids(filter: &Filter) -> Result<usize> {
     Ok(aoc::read_one_per_line::<String>("./data/day4.input")?
         .iter()
         .flat_map(|block| block.split_once(","))
