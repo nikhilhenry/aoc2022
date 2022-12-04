@@ -1,18 +1,14 @@
 use anyhow::Result;
 use aoc;
-use itertools::Itertools;
 use std::ops::RangeInclusive;
 
 trait TupleInt {
-    fn parse_int_tuple(self: &Self) -> (u32, u32);
+    fn parse_range(self: &Self) -> RangeInclusive<u32>;
 }
 
 impl TupleInt for (&str, &str) {
-    fn parse_int_tuple(self: &Self) -> (u32, u32) {
-        (
-            self.0.trim().parse::<u32>().unwrap(),
-            self.1.trim().parse::<u32>().unwrap(),
-        )
+    fn parse_range(self: &Self) -> RangeInclusive<u32> {
+        self.0.trim().parse::<u32>().unwrap()..=self.1.trim().parse::<u32>().unwrap()
     }
 }
 
@@ -29,36 +25,28 @@ impl RangeComparable for RangeInclusive<u32> {
         self.start() <= other.end() && other.start() <= self.end()
     }
 }
-fn count_overlaps() -> Result<usize> {
+fn count_ids(filter: &dyn Fn((RangeInclusive<u32>, RangeInclusive<u32>)) -> bool) -> Result<usize> {
     Ok(aoc::read_one_per_line::<String>("./data/day4.input")?
         .iter()
         .flat_map(|block| block.split_once(","))
-        .filter(|(r1, r2)| {
-            let r1 = r1.split_once("-").unwrap().parse_int_tuple();
-            let r2 = r2.split_once("-").unwrap().parse_int_tuple();
-            let r1 = [r1.0..=r1.1];
-            let r2 = [r2.0..=r2.1];
-            r1[0].overlaps(&r2[0]) || r2[0].overlaps(&r1[0])
+        .map(|(r1, r2)| {
+            (
+                r1.split_once("-").unwrap().parse_range(),
+                r2.split_once("-").unwrap().parse_range(),
+            )
         })
-        .count())
-}
-fn count_contains() -> Result<usize> {
-    Ok(aoc::read_one_per_line::<String>("./data/day4.input")?
-        .iter()
-        .flat_map(|block| block.split_once(","))
-        //.map(|(l1, l2)| (l1.split_once(" ").unwrap().1, l2.split_once(" ").unwrap().1))
-        .filter(|(r1, r2)| {
-            let r1 = r1.split_once("-").unwrap().parse_int_tuple();
-            let r2 = r2.split_once("-").unwrap().parse_int_tuple();
-            let r1 = [r1.0..=r1.1];
-            let r2 = [r2.0..=r2.1];
-            r1[0].contains_within(&r2[0]) || r2[0].contains_within(&r1[0])
-        })
+        .filter(|val| filter(val.to_owned()))
         .count())
 }
 
 fn main() -> Result<()> {
-    println!("Part 1: {}", count_contains()?);
-    println!("Part 2: {}", count_overlaps()?);
+    println!(
+        "Part 1: {}",
+        count_ids(&|(r1, r2)| { r1.contains_within(&r2) || r2.contains_within(&r1) })?
+    );
+    println!(
+        "Part 2: {}",
+        count_ids(&|(r1, r2)| { r1.overlaps(&r2) || r2.overlaps(&r1) })?
+    );
     Ok(())
 }
