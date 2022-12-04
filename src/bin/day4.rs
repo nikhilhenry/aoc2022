@@ -44,9 +44,6 @@ fn main() -> Result<()> {
         "Part 1: {}",
         count_ids(&|(r1, r2)| { r1.contains_within(&r2) || r2.contains_within(&r1) })?
     );
-    println!(
-        "Part 2: {}",
-        count_ids(&|(r1, r2)| { r1.overlaps(&r2) || r2.overlaps(&r1) })?
-    );
+    println!("Part 2: {}", count_ids(&|(r1, r2)| { r1.overlaps(&r2) })?);
     Ok(())
 }
