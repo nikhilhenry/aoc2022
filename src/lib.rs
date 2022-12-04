@@ -11,3 +11,12 @@ where
         .filter_map(|line| line.parse::<T>().ok())
         .collect())
 }
+pub fn read_one_per_block<T>(path: &str) -> Result<Vec<T>>
+where
+    T: FromStr,
+{
+    Ok(read_to_string(path)?
+        .split("\n\n")
+        .filter_map(|line| line.parse::<T>().ok())
+        .collect())
+}
