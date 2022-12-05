@@ -1,9 +1,7 @@
 use anyhow::Result;
 
-fn parse_stack() -> Vec<Vec<char>> {
-    let input = include_str!("../../data/day5.sample");
-    let (stack, moves) = input.split_once("\n\n").expect("aoc is wrong??");
-    let stack: Vec<_> = stack.split("\n").map(|s| String::from(s)).collect();
+fn parse_stack(input: &str) -> Vec<Vec<char>> {
+    let stack: Vec<_> = input.split("\n").map(|s| String::from(s)).collect();
     let num_stacks = stack
         .iter()
         .rev()
@@ -32,7 +30,25 @@ fn parse_stack() -> Vec<Vec<char>> {
     return crate_stack;
 }
 
+fn parse_moves(input: &str) -> Vec<(usize, usize, usize)> {
+    input
+        .split("\n")
+        .map(|set| {
+            set.split(" ")
+                .flat_map(|c| c.parse::<usize>())
+                .collect::<Vec<_>>()
+        })
+        .filter(|set| !set.is_empty())
+        .map(|set| (set[0], set[1], set[2]))
+        .collect()
+}
+
 fn main() -> Result<()> {
-    println!("{:?}", parse_stack());
+    let input = include_str!("../../data/day5.sample");
+    let (stack, moves) = input.split_once("\n\n").expect("aoc is wrong??");
+    let crate_stack = parse_stack(stack);
+    let move_set = parse_moves(moves);
+    println!("{:?}", crate_stack);
+    println!("{:?}", move_set);
     Ok(())
 }
