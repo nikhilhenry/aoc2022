@@ -44,18 +44,15 @@ fn parse_moves(input: &str) -> Vec<(usize, usize, usize)> {
 }
 
 fn main() -> Result<()> {
-    let input = include_str!("../../data/day5.sample");
+    let input = include_str!("../../data/day5.input");
     let (stack, moves) = input.split_once("\n\n").expect("aoc is wrong??");
     let mut crate_stack = parse_stack(stack);
     let move_set = parse_moves(moves);
-    println!("{:?}", crate_stack);
-    println!("{:?}", move_set);
     for (amount, from, to) in move_set.iter() {
         let offset = crate_stack[from - 1].len() - amount;
         let mut temp_set: Vec<_> = crate_stack[from - 1].drain(offset..).rev().collect();
         crate_stack[to - 1].append(&mut temp_set);
     }
-    println!("{:?}", crate_stack);
     let result: String = crate_stack.iter().flat_map(|col| col.last()).collect();
     println!("{}", result);
     Ok(())
