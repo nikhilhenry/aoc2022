@@ -50,7 +50,7 @@ fn main() -> Result<()> {
     let move_set = parse_moves(moves);
     for (amount, from, to) in move_set.iter() {
         let offset = crate_stack[from - 1].len() - amount;
-        let mut temp_set: Vec<_> = crate_stack[from - 1].drain(offset..).rev().collect();
+        let mut temp_set: Vec<_> = crate_stack[from - 1].drain(offset..).collect();
         crate_stack[to - 1].append(&mut temp_set);
     }
     let result: String = crate_stack.iter().flat_map(|col| col.last()).collect();
