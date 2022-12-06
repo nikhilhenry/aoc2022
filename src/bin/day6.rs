@@ -20,6 +20,6 @@ fn main() {
         println!("Part 1: {}", ans);
     }
     if let Some(ans) = find_marker(&input, 14) {
-        println!("Part 1: {}", ans);
+        println!("Part 2: {}", ans);
     }
 }
