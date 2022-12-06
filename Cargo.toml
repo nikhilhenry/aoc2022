@@ -11,4 +11,4 @@ path = "src/lib.rs"
 
 [dependencies]
 anyhow = "1.0"
-itertools = "0.10"
+itertools = "0.10.5"
