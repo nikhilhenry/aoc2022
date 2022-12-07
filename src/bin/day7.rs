@@ -1,6 +1,5 @@
 use anyhow::Result;
 use aoc;
-use itertools::Itertools;
 use std::collections::HashMap;
 use std::str::FromStr;
 
@@ -98,14 +97,13 @@ impl FromStr for DirCommand {
 }
 
 fn dir_walk() -> Result<u32> {
-    let input = aoc::read_one_per_line::<String>("./data/day7.sample")?;
+    let input = aoc::read_one_per_line::<String>("./data/day7.input")?;
     let mut dirs: HashMap<String, Dir> = HashMap::new();
     let mut cur_dir: String = String::new();
     for line in input.iter().skip(1).filter(|l| !(l.contains("$ ls"))) {
         if line == "" {
             continue;
         }
-        //println!("{}", line);
         if let Some(cmd) = line.parse::<DirCommand>().ok() {
             match cmd {
                 DirCommand::In(dir_name) => {
@@ -134,7 +132,6 @@ fn dir_walk() -> Result<u32> {
     let mut dir_sizes = HashMap::new();
     for (k, dir) in &dirs {
         let size: u32 = dir.contents.iter().map(|val| val.get_size(&dirs)).sum();
-        //.collect_vec();
         dir_sizes.insert(k, size);
     }
     Ok(dir_sizes
