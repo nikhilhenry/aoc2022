@@ -6,7 +6,7 @@ use std::str::FromStr;
 
 #[derive(Debug)]
 enum DirCommand {
-    In(char),
+    In(String),
     Out,
 }
 
@@ -17,7 +17,7 @@ trait FileOrDir {
 #[derive(Debug)]
 enum Contents {
     File(File),
-    Dir(char),
+    Dir(String),
 }
 
 impl FromStr for Contents {
@@ -28,13 +28,13 @@ impl FromStr for Contents {
         let val = data.next().unwrap();
         match val.clone().parse::<u32>().ok() {
             Some(size) => Ok(Contents::File(File { size })),
-            None => Ok(Contents::Dir(data.next().unwrap().chars().next().unwrap())),
+            None => Ok(Contents::Dir(data.next().unwrap().to_string())),
         }
     }
 }
 
 impl Contents {
-    fn get_size(&self, dir_map: &HashMap<char, Dir>) -> u32 {
+    fn get_size(&self, dir_map: &HashMap<String, Dir>) -> u32 {
         match self {
             Contents::File(f) => f.get_size(),
             Contents::Dir(d) => dir_map
@@ -81,7 +81,7 @@ impl FromStr for DirCommand {
                 if cmd.next() == Some("cd") {
                     Ok(match cmd.next() {
                         Some("..") => DirCommand::Out,
-                        Some(val) => DirCommand::In(val.chars().nth(0).unwrap()),
+                        Some(val) => DirCommand::In(val.to_string()),
                         _ => panic!("i am broken"),
                     })
                 } else {
@@ -98,8 +98,8 @@ impl FromStr for DirCommand {
 
 fn dir_walk() -> Result<u32> {
     let input = aoc::read_one_per_line::<String>("./data/day7.sample")?;
-    let mut dirs: HashMap<char, Dir> = HashMap::new();
-    let mut cur_dir: char = '0';
+    let mut dirs: HashMap<String, Dir> = HashMap::new();
+    let mut cur_dir: String = '0'.to_string();
     for line in input
         .iter()
         .skip(1)
@@ -111,12 +111,12 @@ fn dir_walk() -> Result<u32> {
         //println!("{}", line);
         if let Some(cmd) = line.parse::<DirCommand>().ok() {
             if let DirCommand::In(dir_name) = cmd {
-                cur_dir = dir_name;
+                cur_dir = dir_name.clone();
                 let new_dir = Dir::new();
                 dirs.insert(dir_name, new_dir);
             }
         } else {
-            if cur_dir != '0' {
+            if cur_dir != '0'.to_string() {
                 let data = line.parse::<Contents>().expect("broken");
                 dirs.get_mut(&cur_dir).unwrap().add_file(data);
             }
