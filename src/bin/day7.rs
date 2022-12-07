@@ -96,7 +96,7 @@ impl FromStr for DirCommand {
     }
 }
 
-fn dir_walk() -> Result<u32> {
+fn dir_walk() -> Result<HashMap<String, u32>> {
     let input = aoc::read_one_per_line::<String>("./data/day7.input")?;
     let mut dirs: HashMap<String, Dir> = HashMap::new();
     let mut cur_dir: String = String::new();
@@ -132,16 +132,19 @@ fn dir_walk() -> Result<u32> {
     let mut dir_sizes = HashMap::new();
     for (k, dir) in &dirs {
         let size: u32 = dir.contents.iter().map(|val| val.get_size(&dirs)).sum();
-        dir_sizes.insert(k, size);
+        dir_sizes.insert(k.to_owned(), size);
     }
-    Ok(dir_sizes
-        .iter()
-        .filter(|(_, size)| **size <= 100000)
-        .map(|(_, size)| *size)
-        .sum())
+    Ok(dir_sizes)
 }
 
 fn main() -> Result<()> {
-    println!("Part 1: {}", dir_walk()?);
+    println!(
+        "Part 1: {}",
+        dir_walk()?
+            .iter()
+            .filter(|(_, size)| **size <= 100000)
+            .map(|(_, size)| *size)
+            .sum::<u32>()
+    );
     Ok(())
 }
