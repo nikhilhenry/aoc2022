@@ -97,10 +97,10 @@ impl FromStr for DirCommand {
 }
 
 fn dir_walk() -> Result<HashMap<String, u32>> {
-    let input = aoc::read_one_per_line::<String>("./data/day7.input")?;
+    let input = aoc::read_one_per_line::<String>("./data/day7.sample")?;
     let mut dirs: HashMap<String, Dir> = HashMap::new();
     let mut cur_dir: String = String::new();
-    for line in input.iter().skip(1).filter(|l| !(l.contains("$ ls"))) {
+    for line in input.iter().filter(|l| !(l.contains("$ ls"))) {
         if line == "" {
             continue;
         }
@@ -132,6 +132,7 @@ fn dir_walk() -> Result<HashMap<String, u32>> {
     let mut dir_sizes = HashMap::new();
     for (k, dir) in &dirs {
         let size: u32 = dir.contents.iter().map(|val| val.get_size(&dirs)).sum();
+        println!("{} : {}", k, size);
         dir_sizes.insert(k.to_owned(), size);
     }
     Ok(dir_sizes)
@@ -146,5 +147,15 @@ fn main() -> Result<()> {
             .map(|(_, size)| *size)
             .sum::<u32>()
     );
+    let dirs = dir_walk()?;
+    let used_space = dirs.get("//").expect("why am i here");
+    let required_space = 70000000 - used_space;
+    let mut result = dir_walk()?
+        .iter()
+        .filter(|(_, size)| **size >= required_space)
+        .map(|(_, size)| *size)
+        .collect::<Vec<_>>();
+    result.sort();
+    println!("Part 2: {}", result[0]);
     Ok(())
 }
