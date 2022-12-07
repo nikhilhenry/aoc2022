@@ -71,6 +71,7 @@ impl Dir {
         self.contents.push(file)
     }
 }
+trait CustomParse {}
 impl FromStr for DirCommand {
     type Err = anyhow::Error;
 
@@ -99,25 +100,33 @@ impl FromStr for DirCommand {
 fn dir_walk() -> Result<u32> {
     let input = aoc::read_one_per_line::<String>("./data/day7.sample")?;
     let mut dirs: HashMap<String, Dir> = HashMap::new();
-    let mut cur_dir: String = '0'.to_string();
-    for line in input
-        .iter()
-        .skip(1)
-        .filter(|l| !(l.contains("$ ls") || l.contains("..")))
-    {
+    let mut cur_dir: String = String::new();
+    for line in input.iter().skip(1).filter(|l| !(l.contains("$ ls"))) {
         if line == "" {
             continue;
         }
         //println!("{}", line);
         if let Some(cmd) = line.parse::<DirCommand>().ok() {
-            if let DirCommand::In(dir_name) = cmd {
-                cur_dir = dir_name.clone();
-                let new_dir = Dir::new();
-                dirs.insert(dir_name, new_dir);
-            }
+            match cmd {
+                DirCommand::In(dir_name) => {
+                    cur_dir.push_str(&format!("/{}", dir_name));
+                    let new_dir = Dir::new();
+                    dirs.insert(cur_dir.clone(), new_dir);
+                    continue;
+                }
+                DirCommand::Out => {
+                    let idx = cur_dir.rfind("/").expect("dont walk here");
+                    cur_dir = String::from(&cur_dir[..idx]);
+                    continue;
+                }
+            };
         } else {
-            if cur_dir != '0'.to_string() {
+            if !cur_dir.is_empty() {
                 let data = line.parse::<Contents>().expect("broken");
+                let data = match data {
+                    Contents::File(val) => Contents::File(val),
+                    Contents::Dir(val) => Contents::Dir(format!("{}/{}", cur_dir, val)),
+                };
                 dirs.get_mut(&cur_dir).unwrap().add_file(data);
             }
         }
@@ -127,7 +136,6 @@ fn dir_walk() -> Result<u32> {
         let size: u32 = dir.contents.iter().map(|val| val.get_size(&dirs)).sum();
         //.collect_vec();
         dir_sizes.insert(k, size);
-        println!("{:?} : {:?}", k, size);
     }
     Ok(dir_sizes
         .iter()
