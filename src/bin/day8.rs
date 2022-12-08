@@ -1,6 +1,5 @@
 use anyhow::Result;
 use aoc;
-use itertools::Itertools;
 
 #[derive(Debug)]
 struct Coord {
@@ -17,11 +16,7 @@ enum Direction {
 
 impl Coord {
     fn get_val(&self, matrix: &Vec<Vec<u32>>) -> Option<u32> {
-        return Some(matrix[self.row][self.col]);
-        match matrix.iter().nth(self.row) {
-            Some(row) => row.iter().nth(self.col).copied(),
-            None => None,
-        }
+        Some(matrix[self.row][self.col])
     }
 
     fn get_cum_val(&self, matrix: &Vec<Vec<u32>>, dir: Direction) -> u32 {
@@ -98,7 +93,7 @@ impl Coord {
             }
             .get_cum_val(matrix, Direction::Left),
         ];
-        println!("{:?} : {:?}", self, neighbours);
+        //println!("{:?} : {:?}", self, neighbours);
         for val in neighbours {
             if val < my_val {
                 return true;
@@ -121,15 +116,24 @@ fn main() -> Result<()> {
         println!("{:?}", row);
     }
 
+    let mut vis_within = 0;
+
     for (idx_row, row) in input.clone()[1..input.len() - 1].iter().enumerate() {
-        for (idx_col, col) in row[1..row.len() - 1].iter().enumerate() {
+        for (idx_col, _) in row[1..row.len() - 1].iter().enumerate() {
             let coord = Coord {
                 row: idx_row + 1,
                 col: idx_col + 1,
             };
-            println!("{:?} : {}", coord, coord.am_i_visible(&input));
+            if coord.am_i_visible(&input) {
+                vis_within += 1;
+            }
         }
     }
+
+    // outer = no of rows * 2 + (no of cols - 2) *2
+
+    let outer = input.len() * 2 + (input[0].len() - 2) * 2;
+    println!("{}", vis_within + outer);
 
     Ok(())
 }
