@@ -105,16 +105,12 @@ impl Coord {
 }
 
 fn main() -> Result<()> {
-    let input = aoc::read_one_per_line::<String>("./data/day8.sample")?;
+    let input = aoc::read_one_per_line::<String>("./data/day8.input")?;
     let input = input
         .iter()
         .filter(|s| !s.is_empty())
         .map(|s| s.chars().filter_map(|c| c.to_digit(10)).collect::<Vec<_>>())
         .collect::<Vec<_>>();
-
-    for row in &input {
-        println!("{:?}", row);
-    }
 
     let mut vis_within = 0;
 
@@ -133,7 +129,7 @@ fn main() -> Result<()> {
     // outer = no of rows * 2 + (no of cols - 2) *2
 
     let outer = input.len() * 2 + (input[0].len() - 2) * 2;
-    println!("{}", vis_within + outer);
+    println!("Part 1: {}", vis_within + outer);
 
     Ok(())
 }
