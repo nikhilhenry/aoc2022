@@ -17,6 +17,7 @@ enum Direction {
 
 impl Coord {
     fn get_val(&self, matrix: &Vec<Vec<u32>>) -> Option<u32> {
+        return Some(matrix[self.row][self.col]);
         match matrix.iter().nth(self.row) {
             Some(row) => row.iter().nth(self.col).copied(),
             None => None,
@@ -25,7 +26,7 @@ impl Coord {
 
     fn get_cum_val(&self, matrix: &Vec<Vec<u32>>, dir: Direction) -> u32 {
         match dir {
-            Direction::Top => (0..self.row)
+            Direction::Top => (0..=self.row)
                 .enumerate()
                 .filter_map(|(v, _)| {
                     Coord {
@@ -34,7 +35,8 @@ impl Coord {
                     }
                     .get_val(matrix)
                 })
-                .sum(),
+                .max()
+                .unwrap(),
             Direction::Bot => (self.row..matrix.len())
                 .enumerate()
                 .filter_map(|(v, _)| {
@@ -44,7 +46,8 @@ impl Coord {
                     }
                     .get_val(matrix)
                 })
-                .sum(),
+                .max()
+                .unwrap(),
             Direction::Left => (0..self.col + 1)
                 .enumerate()
                 .filter_map(|(v, _)| {
@@ -54,7 +57,8 @@ impl Coord {
                     }
                     .get_val(matrix)
                 })
-                .sum(),
+                .max()
+                .unwrap(),
             Direction::Right => (self.col..matrix[0].len())
                 .enumerate()
                 .filter_map(|(v, _)| {
@@ -64,7 +68,8 @@ impl Coord {
                     }
                     .get_val(matrix)
                 })
-                .sum(),
+                .max()
+                .unwrap(),
         }
     }
 
@@ -93,7 +98,7 @@ impl Coord {
             }
             .get_cum_val(matrix, Direction::Left),
         ];
-        //println!("{:?} : {:?}", self, neighbours);
+        println!("{:?} : {:?}", self, neighbours);
         for val in neighbours {
             if val < my_val {
                 return true;
@@ -111,6 +116,10 @@ fn main() -> Result<()> {
         .filter(|s| !s.is_empty())
         .map(|s| s.chars().filter_map(|c| c.to_digit(10)).collect::<Vec<_>>())
         .collect::<Vec<_>>();
+
+    for row in &input {
+        println!("{:?}", row);
+    }
 
     for (idx_row, row) in input.clone()[1..input.len() - 1].iter().enumerate() {
         for (idx_col, col) in row[1..row.len() - 1].iter().enumerate() {
