@@ -26,6 +26,7 @@ struct Monkey {
     test: u32,
     success: usize,
     failure: usize,
+    inspected: u32,
 }
 
 impl FromStr for Operation {
@@ -102,16 +103,18 @@ impl FromStr for Monkey {
             test,
             success,
             failure,
+            inspected: 0,
         })
     }
 }
 
 fn main() -> Result<()> {
     let mut monkeys = aoc::read_one_per_block::<Monkey>("data/day11.sample")?;
-    for _ in 0..1 {
+    for _ in 0..20 {
         for idx in 0..monkeys.len() {
             let mut monkey_copy = monkeys[idx].clone();
             for (jdx, item) in monkey_copy.items.iter_mut().enumerate() {
+                monkeys[idx].inspected += 1;
                 let item = monkey_copy.operation.execute(*item) / 3;
                 if item % monkey_copy.test == 0 {
                     let success = monkey_copy.success;
@@ -127,6 +130,10 @@ fn main() -> Result<()> {
             }
         }
     }
-    dbg!(monkeys);
+    let mut monkey_scores: Vec<_> = monkeys.into_iter().map(|m| m.inspected).collect();
+    dbg!(&monkey_scores);
+    monkey_scores.sort();
+    let monkey_business: u32 = monkey_scores.iter().rev().take(2).product();
+    println!("{}", monkey_business);
     Ok(())
 }
