@@ -5,13 +5,13 @@ use std::str::FromStr;
 
 #[derive(Debug, Clone)]
 enum Operation {
-    Add(u32),
-    Multiply(u32),
+    Add(u64),
+    Multiply(u64),
     Square,
 }
 
 impl Operation {
-    fn execute(&self, val: u32) -> u32 {
+    fn execute(&self, val: u64) -> u64 {
         match self {
             Operation::Add(mag) => val + mag,
             Operation::Multiply(mag) => val * mag,
@@ -21,12 +21,12 @@ impl Operation {
 }
 #[derive(Debug, Clone)]
 struct Monkey {
-    items: Vec<u32>,
+    items: Vec<u64>,
     operation: Operation,
-    test: u32,
+    test: u64,
     success: usize,
     failure: usize,
-    inspected: u32,
+    inspected: u64,
 }
 
 impl FromStr for Operation {
@@ -65,7 +65,7 @@ impl FromStr for Monkey {
             .next()
             .unwrap()
             .split(",")
-            .map(|num| num.trim().parse::<u32>().expect("items must be numbers"))
+            .map(|num| num.trim().parse::<u64>().expect("items must be numbers"))
             .collect::<Vec<_>>();
         let operation = input
             .next()
@@ -79,7 +79,7 @@ impl FromStr for Monkey {
             .split_whitespace()
             .last()
             .ok_or(anyhow!("unable to parse test"))?
-            .parse::<u32>()
+            .parse::<u64>()
             .expect("should be a number");
         let success = input
             .next()
@@ -109,7 +109,7 @@ impl FromStr for Monkey {
 }
 
 fn main() -> Result<()> {
-    let mut monkeys = aoc::read_one_per_block::<Monkey>("data/day11.sample")?;
+    let mut monkeys = aoc::read_one_per_block::<Monkey>("data/day11.input")?;
     for _ in 0..20 {
         for idx in 0..monkeys.len() {
             let mut monkey_copy = monkeys[idx].clone();
@@ -131,9 +131,8 @@ fn main() -> Result<()> {
         }
     }
     let mut monkey_scores: Vec<_> = monkeys.into_iter().map(|m| m.inspected).collect();
-    dbg!(&monkey_scores);
     monkey_scores.sort();
-    let monkey_business: u32 = monkey_scores.iter().rev().take(2).product();
+    let monkey_business: u64 = monkey_scores.iter().rev().take(2).product();
     println!("{}", monkey_business);
     Ok(())
 }
