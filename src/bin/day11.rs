@@ -110,12 +110,13 @@ impl FromStr for Monkey {
 
 fn main() -> Result<()> {
     let mut monkeys = aoc::read_one_per_block::<Monkey>("data/day11.input")?;
-    for _ in 0..20 {
+    let lcm: u64 = monkeys.iter().map(|m| m.test).product();
+    for _ in 0..10000 {
         for idx in 0..monkeys.len() {
             let mut monkey_copy = monkeys[idx].clone();
             for (jdx, item) in monkey_copy.items.iter_mut().enumerate() {
                 monkeys[idx].inspected += 1;
-                let item = monkey_copy.operation.execute(*item) / 3;
+                let item = monkey_copy.operation.execute(*item) % lcm;
                 if item % monkey_copy.test == 0 {
                     let success = monkey_copy.success;
                     // transfering to the other monkey
@@ -131,6 +132,7 @@ fn main() -> Result<()> {
         }
     }
     let mut monkey_scores: Vec<_> = monkeys.into_iter().map(|m| m.inspected).collect();
+    dbg!(&monkey_scores);
     monkey_scores.sort();
     let monkey_business: u64 = monkey_scores.iter().rev().take(2).product();
     println!("{}", monkey_business);
