@@ -1,0 +1,132 @@
+use anyhow::anyhow;
+use anyhow::Result;
+use aoc;
+use std::str::FromStr;
+
+#[derive(Debug, Clone)]
+enum Operation {
+    Add(u32),
+    Multiply(u32),
+    Square,
+}
+
+impl Operation {
+    fn execute(&self, val: u32) -> u32 {
+        match self {
+            Operation::Add(mag) => val + mag,
+            Operation::Multiply(mag) => val * mag,
+            Operation::Square => val * val,
+        }
+    }
+}
+#[derive(Debug, Clone)]
+struct Monkey {
+    items: Vec<u32>,
+    operation: Operation,
+    test: u32,
+    success: usize,
+    failure: usize,
+}
+
+impl FromStr for Operation {
+    type Err = anyhow::Error;
+
+    fn from_str(s: &str) -> Result<Self> {
+        let mut input = s.split("=");
+        input.next();
+        let mut input = input
+            .next()
+            .ok_or(anyhow!("Unable to parse operation"))?
+            .split_whitespace();
+        input.next();
+        match input.next() {
+            Some("+") => Ok(Operation::Add(input.next().unwrap().parse()?)),
+            Some("*") => match input.next() {
+                Some("old") => Ok(Operation::Square),
+                Some(val) => Ok(Operation::Multiply(val.parse()?)),
+                _ => panic!("how did we get here?"),
+            },
+            _ => panic!("how did we get here?"),
+        }
+    }
+}
+
+impl FromStr for Monkey {
+    type Err = anyhow::Error;
+    fn from_str(s: &str) -> Result<Self> {
+        let mut input = s.split('\n');
+        input.next();
+        let items = input
+            .next()
+            .ok_or(anyhow!("Unable to parse Monkey"))?
+            .split(":")
+            .skip(1)
+            .next()
+            .unwrap()
+            .split(",")
+            .map(|num| num.trim().parse::<u32>().expect("items must be numbers"))
+            .collect::<Vec<_>>();
+        let operation = input
+            .next()
+            .ok_or(anyhow!("unable to parse test"))?
+            .parse::<Operation>()
+            .expect("should parse operation");
+        let test = input
+            .next()
+            .ok_or(anyhow!("unable to parse test"))?
+            .trim()
+            .split_whitespace()
+            .last()
+            .ok_or(anyhow!("unable to parse test"))?
+            .parse::<u32>()
+            .expect("should be a number");
+        let success = input
+            .next()
+            .ok_or(anyhow!("unable to parse test"))?
+            .trim()
+            .split_whitespace()
+            .last()
+            .ok_or(anyhow!("unable to parse test"))?
+            .parse::<usize>()?;
+        let failure = input
+            .next()
+            .ok_or(anyhow!("unable to parse test"))?
+            .trim()
+            .split_whitespace()
+            .last()
+            .ok_or(anyhow!("unable to parse test"))?
+            .parse::<usize>()?;
+        Ok(Monkey {
+            items,
+            operation,
+            test,
+            success,
+            failure,
+        })
+    }
+}
+
+fn main() -> Result<()> {
+    let mut monkeys = aoc::read_one_per_block::<Monkey>("data/day11.sample")?;
+    for _ in 0..1 {
+        for idx in 0..monkeys.len() {
+            let mut monkey_copy = monkeys[idx].clone();
+            for (jdx, item) in monkey_copy.items.iter_mut().enumerate() {
+                let item = monkey_copy.operation.execute(*item) / 3;
+                if item % monkey_copy.test == 0 {
+                    let success = monkey_copy.success;
+                    // transfering to the other monkey
+                    monkeys[success].items.push(item);
+                    monkeys[idx].items.remove(0);
+                } else {
+                    let failure = monkey_copy.failure;
+                    // transfering to the other monkey
+                    monkeys[failure].items.push(item);
+                    monkeys[idx].items.remove(0);
+                }
+            }
+        }
+    }
+    dbg!(monkeys);
+    Ok(())
+}
